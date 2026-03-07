@@ -1,1255 +1,810 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
-  BriefcaseBusiness,
-  ChartNoAxesCombined,
+  BarChart3,
+  CheckCircle2,
   ChevronDown,
-  CircleCheck,
+  ChevronRight,
   Globe,
-  Layers3,
+  Leaf,
+  Mail,
+  MapPin,
   Menu,
-  ShieldCheck,
+  Phone,
+  Settings2,
   Sparkles,
-  TimerReset,
-  Users,
+  Truck,
   Workflow,
   X,
-  Zap,
 } from "lucide-react";
-
-type Lang = "en" | "nl" | "es";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const viewport = { once: true, amount: 0.2 };
 
 const content = {
   en: {
-    brand: "Travon Group",
-    langLabel: "Language",
     nav: {
       services: "Services",
-      results: "Results",
+      problems: "Problems",
       process: "Process",
-      about: "Why us",
-      faq: "FAQ",
+      pricing: "Pricing",
+      contact: "Contact",
+      book: "Book call",
     },
-    topCta: "Book a call",
-    heroBadge: "Recruitment • Performance • Automation",
-    heroTitle: "Growth systems for companies that want real momentum.",
+    tagline: "Websites, automation and digital systems",
+    heroBadge: "Built for modern companies that want a stronger digital base",
+    heroTitle: "Stronger websites and smarter systems for growing companies.",
     heroText:
-      "We help companies generate stronger lead flow, attract better applicants, and improve follow-up through recruitment, paid media, and smart automation.",
-    heroPrimary: "Book a call",
-    heroSecondary: "View services",
-    heroStats: [
-      { value: "48h", label: "Fast launch" },
-      { value: "3-in-1", label: "Growth system" },
-      { value: "Focused", label: "On output" },
+      "Travon helps businesses improve their website, simplify workflows, and build a stronger digital foundation that supports growth.",
+    primaryCta: "Book a strategy call",
+    secondaryCta: "View services",
+    trustLine: "Based in Rotterdam • Websites • Automation • Digital systems",
+    frameworkTitle: "Travon Framework",
+    frameworkItems: [
+      "Understand the business",
+      "Make the message clear",
+      "Improve the systems",
+      "Build for growth",
     ],
-    trust: [
-      "Built for growth",
-      "Performance driven",
-      "Automation first",
-      "Fast execution",
+    sectorsEyebrow: "Built for modern sectors",
+    sectors: [
+      "Logistics",
+      "Construction",
+      "Energy",
+      "Industrial",
+      "Service businesses",
+      "Modern B2B",
     ],
-    dashboardTitle: "Growth Overview",
-    dashboardSub: "Recruitment & Marketing Dashboard",
-    dashboardCards: [
-      {
-        title: "New leads",
-        value: "+28%",
-        text: "Stronger inbound through campaigns and sharper funnels.",
-      },
-      {
-        title: "Applications",
-        value: "+41%",
-        text: "Better visibility and more qualified candidate flow.",
-      },
+    problemsEyebrow: "Problems we solve",
+    problemsTitle: "Common problems we help fix.",
+    problemsText:
+      "Many companies already do good work, but their website and systems do not show it clearly enough.",
+    problems: [
+      "Your website does not clearly explain what you do",
+      "Too much manual work slows your team down",
+      "Your company looks smaller online than it really is",
+      "Your digital setup feels messy and unstructured",
     ],
-    dashboardWhyTitle: "Why this works",
-    dashboardWhyText:
-      "Most companies treat marketing, hiring, and follow-up as separate systems. We connect them into one clear engine, making growth more consistent and easier to scale.",
-    servicesLabel: "Services",
-    servicesTitle: "What we can build for your company",
+    problemsEnd:
+      "Travon helps fix that with clearer websites, smarter systems, and stronger structure.",
+    servicesEyebrow: "Services",
+    servicesTitle: "What Travon can improve.",
     servicesText:
-      "Not fragmented tactics, but focused services that support structural growth.",
-    servicesMore: "Learn more",
-    services: [
+      "A clear offer makes your business easier to understand and easier to trust.",
+    serviceCards: [
       {
-        icon: BriefcaseBusiness,
-        title: "Recruitment Campaigns",
-        description:
-          "Attract stronger applicants with sharper campaigns, positioning, and candidate flow.",
-        points: ["Job campaigns", "Employer branding", "More qualified inbound"],
+        title: "Websites",
+        text: "Company websites, landing pages, and redesigns that look stronger and convert better.",
+        bullets: ["Company sites", "Landing pages", "Redesigns"],
       },
       {
-        icon: ChartNoAxesCombined,
-        title: "Paid Ads & Lead Generation",
-        description:
-          "Performance marketing built to increase inquiries, lead quality, and conversion.",
-        points: ["Meta & Google Ads", "Landing pages", "Lead funnels"],
+        title: "Automation",
+        text: "Simple automation for forms, lead follow-up, and daily tasks that take too much time.",
+        bullets: ["Form flows", "Lead handling", "Admin tasks"],
       },
       {
-        icon: Workflow,
-        title: "AI & Automation",
-        description:
-          "Smarter follow-up, less manual work, and better internal workflows.",
-        points: ["Lead follow-up", "Workflow automation", "Operational efficiency"],
+        title: "Growth structure",
+        text: "Clearer messaging, better page structure, and a smoother user flow from first click to contact.",
+        bullets: ["Messaging", "Page structure", "User flow"],
       },
     ],
-    resultsLabel: "Proof",
-    resultsTitle: "Built around practical business outcomes",
-    resultsText:
-      "Your website should not only look premium — it should immediately communicate business value.",
-    results: [
-      {
-        icon: Users,
-        title: "More qualified applicants",
-        text: "Sharper vacancy campaigns and stronger employer positioning improve candidate quality.",
-      },
-      {
-        icon: Zap,
-        title: "Better lead flow",
-        text: "Clearer offers, better landing pages, and stronger ad structure improve inbound quality.",
-      },
-      {
-        icon: TimerReset,
-        title: "Faster follow-up",
-        text: "Automation reduces delay, improves consistency, and helps teams move faster.",
-      },
-    ],
-    processLabel: "Process",
-    processTitle: "Simple structure. Sharp execution.",
-    processText:
-      "We define what matters, launch fast, and improve continuously through real-world feedback.",
-    process: [
-      {
-        step: "01",
-        title: "Analysis",
-        description:
-          "We identify bottlenecks, opportunities, and the clearest path to growth.",
-      },
-      {
-        step: "02",
-        title: "Build & Launch",
-        description:
-          "We build the campaigns, pages, and systems and get everything live cleanly.",
-      },
-      {
-        step: "03",
-        title: "Optimize",
-        description:
-          "We refine based on data, feedback, and operational reality.",
-      },
-    ],
-    aboutLabel: "Why us",
-    aboutTitle: "A premium growth partner, not just another agency.",
-    aboutText:
-      "Many agencies focus on isolated marketing deliverables. We work more structurally: connecting lead generation, hiring, and follow-up into one growth system.",
+    whyEyebrow: "Why Travon",
+    whyTitle: "Why companies work with Travon.",
+    whyText:
+      "Travon should feel clear, solid, and easy to trust — not vague or overcomplicated.",
     reasons: [
       {
-        icon: Layers3,
-        title: "Connected systems",
-        text: "Recruitment, marketing, and automation aligned instead of fragmented.",
+        title: "Clear thinking",
+        text: "We simplify what your company offers and turn it into pages and systems people understand fast.",
       },
       {
-        icon: ShieldCheck,
-        title: "Clear delivery",
-        text: "Simple structure, premium execution, and no unnecessary complexity.",
+        title: "Practical work",
+        text: "No vague advice. We focus on improvements that help your business look better and run better.",
       },
       {
-        icon: Sparkles,
-        title: "Premium positioning",
-        text: "A cleaner, more credible approach than the typical noisy agency style.",
+        title: "Built to grow",
+        text: "Everything we build should support the next stage of your company, not only today.",
       },
     ],
-    faqLabel: "FAQ",
-    faqTitle: "Frequently asked questions",
-    faqs: [
+    processEyebrow: "Process",
+    processTitle: "How we work.",
+    processText:
+      "The process stays simple from start to finish: find the issue, build the improvement, and keep refining what matters.",
+    process: [
+      { title: "Audit", text: "We analyse what is unclear, slow, or weak." },
+      { title: "Plan", text: "We create a clear improvement plan." },
+      { title: "Build", text: "We improve the pages, structure, and systems." },
+      { title: "Improve", text: "After launch, we refine what works best." },
+    ],
+    examplesEyebrow: "Example improvements",
+    examplesTitle: "The kind of improvements we build.",
+    examplesText:
+      "Simple examples that show how Travon improves clarity, trust, and workflow.",
+    examples: [
       {
-        q: "What types of companies do you work with?",
-        a: "We work with companies that want stronger lead flow, better hiring, or more efficient follow-up. Especially companies that value practical business outcomes.",
+        number: "01",
+        title: "Better first impression",
+        text: "A cleaner website structure with stronger text, better sections, and clearer calls to action.",
       },
       {
-        q: "Do you only do marketing, or also recruitment?",
-        a: "Both. The combination is exactly what makes the approach stronger and more commercially useful.",
+        number: "02",
+        title: "Less manual work",
+        text: "Simple automation ideas that reduce repeated tasks and make daily work easier.",
       },
       {
-        q: "How fast can you start?",
-        a: "That depends on the scope, but in many cases we can move quickly and launch a strong first setup within a short timeframe.",
-      },
-      {
-        q: "Do you work project-based or monthly?",
-        a: "Both. Some clients start with a focused project, others continue into an ongoing growth partnership.",
+        number: "03",
+        title: "Stronger positioning",
+        text: "A sharper message and cleaner design so people understand faster what your company does.",
       },
     ],
-    ctaLabel: "Ready to grow?",
-    ctaTitle: "Let’s identify your next growth lever.",
+    pricingEyebrow: "Pricing",
+    pricingTitle: "Simple starting prices.",
+    pricingText:
+      "This gives people a clear idea of budget while still leaving room to discuss the final scope.",
+    pricingCards: [
+      { title: "Web projects", price: "From €1500", text: "Landing pages, company websites, and redesigns." },
+      { title: "Automation setup", price: "From €1200", text: "Simple workflow improvements and automation support." },
+      { title: "Growth support", price: "Custom", text: "For wider projects, support, or ongoing work." },
+    ],
+    pricingNote: "Final scope depends on the project.",
+    ctaEyebrow: "Contact",
+    ctaTitle: "Ready to improve your website or systems?",
     ctaText:
-      "Whether you want better lead flow, stronger hiring, or smarter systems, the goal is the same: build something that works and scales.",
-    ctaPrimary: "Get in touch",
-    ctaSecondary: "View services",
-    ctaFoot: "Clear approach. Fast execution. Premium positioning.",
-    footerTitle: "Travon Group",
-    footerText:
-      "Recruitment, performance marketing, and automation for companies that want structured growth.",
-    footerNav: "Navigation",
-    footerContact: "Contact",
-    footerRights: "© 2026 Travon Group. All rights reserved.",
-    mobileMenu: "Menu",
+      "Whether you want a better website, less manual work, or a stronger digital setup, Travon helps turn that into a clear next step.",
+    ctaPrimary: "Email Travon Group",
+    ctaSecondary: "Call Travon Group",
+    footerText: "Travon builds websites, systems, and digital structure for modern companies.",
+    footerLinks: { services: "Services", process: "Process", pricing: "Pricing", contact: "Contact" },
   },
   nl: {
-    brand: "Travon Group",
-    langLabel: "Taal",
     nav: {
       services: "Diensten",
-      results: "Resultaten",
-      process: "Werkwijze",
-      about: "Waarom wij",
-      faq: "FAQ",
+      problems: "Problemen",
+      process: "Proces",
+      pricing: "Prijzen",
+      contact: "Contact",
+      book: "Plan call",
     },
-    topCta: "Plan een gesprek",
-    heroBadge: "Recruitment • Performance • Automation",
-    heroTitle: "Groei-systemen voor bedrijven die echte vooruitgang willen.",
+    tagline: "Websites, automatisering en digitale systemen",
+    heroBadge: "Voor moderne bedrijven die hun digitale basis willen versterken",
+    heroTitle: "Sterkere websites en slimmere systemen voor groeiende bedrijven.",
     heroText:
-      "Wij helpen bedrijven aan betere leadflow, sterkere sollicitanten en snellere opvolging via recruitment, paid media en slimme automatisering.",
-    heroPrimary: "Plan een gesprek",
-    heroSecondary: "Bekijk diensten",
-    heroStats: [
-      { value: "48u", label: "Snelle opstart" },
-      { value: "3-in-1", label: "Growth systeem" },
-      { value: "Focus", label: "Op output" },
+      "Travon helpt bedrijven hun website verbeteren, processen versimpelen en een sterkere digitale basis bouwen die groei ondersteunt.",
+    primaryCta: "Plan een gesprek",
+    secondaryCta: "Bekijk diensten",
+    trustLine: "Gebaseerd in Rotterdam • Websites • Automatisering • Digitale systemen",
+    frameworkTitle: "Travon Framework",
+    frameworkItems: [
+      "Het bedrijf goed begrijpen",
+      "De boodschap duidelijk maken",
+      "De systemen verbeteren",
+      "Bouwen voor groei",
     ],
-    trust: [
-      "Built for growth",
-      "Performance driven",
-      "Automation first",
-      "Fast execution",
+    sectorsEyebrow: "Voor moderne sectoren",
+    sectors: [
+      "Logistiek",
+      "Bouw",
+      "Energie",
+      "Industrie",
+      "Servicebedrijven",
+      "Modern B2B",
     ],
-    dashboardTitle: "Growth Overview",
-    dashboardSub: "Recruitment & Marketing Dashboard",
-    dashboardCards: [
-      {
-        title: "Nieuwe leads",
-        value: "+28%",
-        text: "Sterkere instroom via campagnes en scherpere funnels.",
-      },
-      {
-        title: "Sollicitaties",
-        value: "+41%",
-        text: "Betere zichtbaarheid en meer kwalitatieve kandidaatinstroom.",
-      },
+    problemsEyebrow: "Problemen die we oplossen",
+    problemsTitle: "Veelvoorkomende problemen die we helpen oplossen.",
+    problemsText:
+      "Veel bedrijven leveren al goed werk, maar hun website en systemen laten dat nog niet duidelijk genoeg zien.",
+    problems: [
+      "Je website legt niet duidelijk uit wat je doet",
+      "Te veel handmatig werk kost je team tijd",
+      "Je bedrijf oogt online kleiner dan het is",
+      "Je digitale systemen voelen rommelig en onduidelijk",
     ],
-    dashboardWhyTitle: "Waarom dit werkt",
-    dashboardWhyText:
-      "Veel bedrijven behandelen marketing, hiring en opvolging als losse onderdelen. Wij koppelen ze aan elkaar in één helder groeisysteem, zodat groei consistenter en schaalbaarder wordt.",
-    servicesLabel: "Diensten",
-    servicesTitle: "Wat we voor jouw bedrijf kunnen bouwen",
+    problemsEnd:
+      "Travon helpt dit oplossen met duidelijkere websites, slimmere systemen en sterkere structuur.",
+    servicesEyebrow: "Diensten",
+    servicesTitle: "Wat Travon kan verbeteren.",
     servicesText:
-      "Geen losse tactieken, maar gerichte services die structurele groei ondersteunen.",
-    servicesMore: "Meer info",
-    services: [
+      "Een duidelijk aanbod maakt je bedrijf makkelijker te begrijpen en makkelijker te vertrouwen.",
+    serviceCards: [
       {
-        icon: BriefcaseBusiness,
-        title: "Recruitment Campaigns",
-        description:
-          "Trek betere sollicitanten aan met scherpere campagnes, positionering en candidate flow.",
-        points: ["Vacaturecampagnes", "Employer branding", "Kwalitatievere instroom"],
+        title: "Websites",
+        text: "Bedrijfswebsites, landingspagina's en redesigns die sterker ogen en beter converteren.",
+        bullets: ["Bedrijfswebsites", "Landingspagina's", "Redesigns"],
       },
       {
-        icon: ChartNoAxesCombined,
-        title: "Paid Ads & Lead Generation",
-        description:
-          "Performance marketing gericht op meer aanvragen, betere leads en sterkere conversie.",
-        points: ["Meta & Google Ads", "Landing pages", "Lead funnels"],
+        title: "Automatisering",
+        text: "Eenvoudige automatisering voor formulieren, lead-opvolging en dagelijkse taken die te veel tijd kosten.",
+        bullets: ["Formulierflows", "Lead-opvolging", "Admin taken"],
       },
       {
-        icon: Workflow,
-        title: "AI & Automation",
-        description:
-          "Slimmere opvolging, minder handmatig werk en betere interne workflows.",
-        points: ["Lead opvolging", "Workflow automation", "Efficiëntere operatie"],
+        title: "Groeistructuur",
+        text: "Duidelijkere boodschap, betere pagina-opbouw en een soepelere route van eerste klik naar contact.",
+        bullets: ["Boodschap", "Pagina-opbouw", "Gebruikersflow"],
       },
     ],
-    resultsLabel: "Proof",
-    resultsTitle: "Gebouwd rondom echte bedrijfsresultaten",
-    resultsText:
-      "Je website moet er niet alleen premium uitzien — hij moet direct zakelijke waarde uitstralen.",
-    results: [
-      {
-        icon: Users,
-        title: "Meer kwalitatieve sollicitanten",
-        text: "Scherpere vacaturecampagnes en sterkere employer positioning verbeteren kandidaatkwaliteit.",
-      },
-      {
-        icon: Zap,
-        title: "Betere leadflow",
-        text: "Duidelijkere proposities, betere pagina’s en sterkere campagnes verhogen de inbound kwaliteit.",
-      },
-      {
-        icon: TimerReset,
-        title: "Snellere opvolging",
-        text: "Automation vermindert vertraging, verbetert consistentie en helpt teams sneller handelen.",
-      },
-    ],
-    processLabel: "Werkwijze",
-    processTitle: "Eenvoudige structuur. Strakke uitvoering.",
-    processText:
-      "We bepalen eerst wat echt belangrijk is, lanceren snel en verbeteren continu op basis van praktijk en data.",
-    process: [
-      {
-        step: "01",
-        title: "Analyse",
-        description:
-          "We brengen bottlenecks, kansen en de duidelijkste groeirichting in kaart.",
-      },
-      {
-        step: "02",
-        title: "Build & Launch",
-        description:
-          "We bouwen campagnes, pagina’s en systemen en zetten alles strak live.",
-      },
-      {
-        step: "03",
-        title: "Optimaliseren",
-        description:
-          "We verbeteren op basis van data, feedback en operationele realiteit.",
-      },
-    ],
-    aboutLabel: "Waarom wij",
-    aboutTitle: "Een premium groeipartner, niet zomaar weer een agency.",
-    aboutText:
-      "Veel agencies focussen op losse marketingdeliverables. Wij werken structureler: leadgeneratie, hiring en opvolging verbinden in één groeisysteem.",
+    whyEyebrow: "Waarom Travon",
+    whyTitle: "Waarom bedrijven met Travon werken.",
+    whyText:
+      "Travon moet duidelijk, sterk en betrouwbaar aanvoelen — niet vaag of onnodig ingewikkeld.",
     reasons: [
       {
-        icon: Layers3,
-        title: "Verbonden systemen",
-        text: "Recruitment, marketing en automation op elkaar afgestemd in plaats van versnipperd.",
+        title: "Duidelijk denken",
+        text: "We maken helder wat je bedrijf aanbiedt en vertalen dat naar pagina's en systemen die snel begrepen worden.",
       },
       {
-        icon: ShieldCheck,
-        title: "Duidelijke uitvoering",
-        text: "Eenvoudige structuur, premium uitwerking en geen onnodige complexiteit.",
+        title: "Praktisch werk",
+        text: "Geen vage adviezen. We focussen op verbeteringen die je bedrijf echt beter laten ogen en werken.",
       },
       {
-        icon: Sparkles,
-        title: "Sterke positionering",
-        text: "Een schonere en geloofwaardigere aanpak dan de typische drukke agency-stijl.",
+        title: "Gebouwd voor groei",
+        text: "Alles wat we maken moet de volgende stap van je bedrijf ondersteunen, niet alleen vandaag.",
       },
     ],
-    faqLabel: "FAQ",
-    faqTitle: "Veelgestelde vragen",
-    faqs: [
-      {
-        q: "Voor wat voor bedrijven werken jullie?",
-        a: "Wij werken met bedrijven die sterkere leadflow, betere hiring of efficiëntere opvolging willen. Vooral bedrijven die praktische businessresultaten belangrijk vinden.",
-      },
-      {
-        q: "Doen jullie alleen marketing of ook recruitment?",
-        a: "Beide. Juist die combinatie maakt de aanpak commercieel sterker en waardevoller.",
-      },
-      {
-        q: "Hoe snel kunnen jullie starten?",
-        a: "Dat hangt af van de scope, maar in veel gevallen kunnen we snel schakelen en binnen korte tijd een sterke eerste opzet lanceren.",
-      },
-      {
-        q: "Werken jullie projectmatig of maandelijks?",
-        a: "Allebei. Sommige klanten starten met een project, anderen groeien door naar een vaste samenwerking.",
-      },
-    ],
-    ctaLabel: "Klaar om te groeien?",
-    ctaTitle: "Laten we jouw volgende groeiversneller bepalen.",
-    ctaText:
-      "Of je nu betere leadflow, sterkere hiring of slimmere systemen wilt, het doel blijft hetzelfde: iets bouwen dat werkt en schaalbaar is.",
-    ctaPrimary: "Neem contact op",
-    ctaSecondary: "Bekijk diensten",
-    ctaFoot: "Duidelijke aanpak. Snelle uitvoering. Premium uitstraling.",
-    footerTitle: "Travon Group",
-    footerText:
-      "Recruitment, performance marketing en automation voor bedrijven die gestructureerd willen groeien.",
-    footerNav: "Navigatie",
-    footerContact: "Contact",
-    footerRights: "© 2026 Travon Group. All rights reserved.",
-    mobileMenu: "Menu",
-  },
-  es: {
-    brand: "Travon Group",
-    langLabel: "Idioma",
-    nav: {
-      services: "Servicios",
-      results: "Resultados",
-      process: "Proceso",
-      about: "Por qué nosotros",
-      faq: "FAQ",
-    },
-    topCta: "Reservar llamada",
-    heroBadge: "Recruitment • Performance • Automation",
-    heroTitle: "Sistemas de crecimiento para empresas que quieren avanzar de verdad.",
-    heroText:
-      "Ayudamos a las empresas a conseguir mejores leads, atraer mejores candidatos y mejorar el seguimiento con recruitment, paid media y automatización inteligente.",
-    heroPrimary: "Reservar llamada",
-    heroSecondary: "Ver servicios",
-    heroStats: [
-      { value: "48h", label: "Lanzamiento rápido" },
-      { value: "3-en-1", label: "Sistema de crecimiento" },
-      { value: "Foco", label: "En resultados" },
-    ],
-    trust: [
-      "Built for growth",
-      "Performance driven",
-      "Automation first",
-      "Fast execution",
-    ],
-    dashboardTitle: "Growth Overview",
-    dashboardSub: "Recruitment & Marketing Dashboard",
-    dashboardCards: [
-      {
-        title: "Nuevos leads",
-        value: "+28%",
-        text: "Más entrada gracias a campañas y funnels mejor estructurados.",
-      },
-      {
-        title: "Solicitudes",
-        value: "+41%",
-        text: "Mejor visibilidad y candidatos más cualificados.",
-      },
-    ],
-    dashboardWhyTitle: "Por qué funciona",
-    dashboardWhyText:
-      "Muchas empresas tratan marketing, hiring y seguimiento como sistemas separados. Nosotros los conectamos en un motor claro de crecimiento, haciendo la ejecución más consistente y escalable.",
-    servicesLabel: "Servicios",
-    servicesTitle: "Lo que podemos construir para tu empresa",
-    servicesText:
-      "No tácticas sueltas, sino servicios enfocados en crecimiento estructural.",
-    servicesMore: "Más información",
-    services: [
-      {
-        icon: BriefcaseBusiness,
-        title: "Recruitment Campaigns",
-        description:
-          "Atrae mejores candidatos con campañas más claras, mejor posicionamiento y mejor candidate flow.",
-        points: ["Campañas de vacantes", "Employer branding", "Más candidatos cualificados"],
-      },
-      {
-        icon: ChartNoAxesCombined,
-        title: "Paid Ads & Lead Generation",
-        description:
-          "Performance marketing para aumentar solicitudes, mejorar la calidad del lead y la conversión.",
-        points: ["Meta & Google Ads", "Landing pages", "Lead funnels"],
-      },
-      {
-        icon: Workflow,
-        title: "AI & Automation",
-        description:
-          "Mejor seguimiento, menos trabajo manual y workflows internos más eficientes.",
-        points: ["Seguimiento de leads", "Automatización", "Más eficiencia operativa"],
-      },
-    ],
-    resultsLabel: "Proof",
-    resultsTitle: "Construido alrededor de resultados reales de negocio",
-    resultsText:
-      "Tu web no solo debe parecer premium — debe transmitir valor empresarial al instante.",
-    results: [
-      {
-        icon: Users,
-        title: "Más candidatos cualificados",
-        text: "Campañas de vacantes más precisas y mejor posicionamiento elevan la calidad del candidato.",
-      },
-      {
-        icon: Zap,
-        title: "Mejor flujo de leads",
-        text: "Ofertas más claras, mejores páginas y mejores campañas elevan la calidad del inbound.",
-      },
-      {
-        icon: TimerReset,
-        title: "Seguimiento más rápido",
-        text: "La automatización reduce retrasos, mejora consistencia y ayuda a reaccionar antes.",
-      },
-    ],
-    processLabel: "Proceso",
-    processTitle: "Estructura simple. Ejecución sólida.",
+    processEyebrow: "Proces",
+    processTitle: "Hoe we werken.",
     processText:
-      "Definimos lo importante, lanzamos rápido y mejoramos continuamente con datos y feedback real.",
+      "Het proces blijft van begin tot eind simpel: probleem vinden, verbetering bouwen en blijven verfijnen wat telt.",
     process: [
+      { title: "Audit", text: "We analyseren wat onduidelijk, traag of zwak is." },
+      { title: "Plan", text: "We maken een helder verbeterplan." },
+      { title: "Build", text: "We verbeteren de pagina's, structuur en systemen." },
+      { title: "Improve", text: "Na livegang scherpen we aan wat het beste werkt." },
+    ],
+    examplesEyebrow: "Voorbeelden",
+    examplesTitle: "Het soort verbeteringen dat we bouwen.",
+    examplesText:
+      "Simpele voorbeelden die laten zien hoe Travon duidelijkheid, vertrouwen en workflow verbetert.",
+    examples: [
       {
-        step: "01",
-        title: "Análisis",
-        description:
-          "Detectamos cuellos de botella, oportunidades y la vía más clara para crecer.",
+        number: "01",
+        title: "Sterkere eerste indruk",
+        text: "Een schonere website-opbouw met sterkere tekst, betere secties en duidelijkere calls to action.",
       },
       {
-        step: "02",
-        title: "Build & Launch",
-        description:
-          "Construimos campañas, páginas y sistemas y lo ponemos todo en marcha con orden.",
+        number: "02",
+        title: "Minder handmatig werk",
+        text: "Eenvoudige automatisering die herhalende taken vermindert en dagelijkse werkzaamheden makkelijker maakt.",
       },
       {
-        step: "03",
-        title: "Optimización",
-        description:
-          "Mejoramos según datos, feedback y realidad operativa.",
+        number: "03",
+        title: "Sterkere positionering",
+        text: "Een scherpere boodschap en schoner design zodat mensen sneller begrijpen wat je bedrijf doet.",
       },
     ],
-    aboutLabel: "Por qué nosotros",
-    aboutTitle: "Un partner premium de crecimiento, no otra agencia más.",
-    aboutText:
-      "Muchas agencias se enfocan en entregables de marketing aislados. Nosotros conectamos generación de leads, hiring y seguimiento dentro de un solo sistema de crecimiento.",
-    reasons: [
-      {
-        icon: Layers3,
-        title: "Sistemas conectados",
-        text: "Recruitment, marketing y automatización alineados en lugar de fragmentados.",
-      },
-      {
-        icon: ShieldCheck,
-        title: "Entrega clara",
-        text: "Estructura simple, ejecución premium y sin complejidad innecesaria.",
-      },
-      {
-        icon: Sparkles,
-        title: "Posicionamiento premium",
-        text: "Un enfoque más limpio y creíble que el estilo típico de agencia ruidosa.",
-      },
+    pricingEyebrow: "Prijzen",
+    pricingTitle: "Duidelijke startprijzen.",
+    pricingText:
+      "Zo krijgen mensen een goed idee van het budget, terwijl er ruimte blijft om de uiteindelijke scope te bespreken.",
+    pricingCards: [
+      { title: "Webprojecten", price: "Vanaf €1500", text: "Landingspagina's, bedrijfswebsites en redesigns." },
+      { title: "Automatisering", price: "Vanaf €1200", text: "Eenvoudige workflow-verbeteringen en automatisering." },
+      { title: "Growth support", price: "Op maat", text: "Voor bredere projecten, support of doorlopende samenwerking." },
     ],
-    faqLabel: "FAQ",
-    faqTitle: "Preguntas frecuentes",
-    faqs: [
-      {
-        q: "¿Con qué tipo de empresas trabajáis?",
-        a: "Trabajamos con empresas que quieren mejorar sus leads, su hiring o la eficiencia de su seguimiento. Especialmente empresas que valoran resultados de negocio reales.",
-      },
-      {
-        q: "¿Hacéis solo marketing o también recruitment?",
-        a: "Ambos. Precisamente esa combinación hace que el enfoque sea más fuerte y más útil comercialmente.",
-      },
-      {
-        q: "¿Qué tan rápido podéis empezar?",
-        a: "Depende del alcance, pero en muchos casos podemos movernos rápido y lanzar una primera base sólida en poco tiempo.",
-      },
-      {
-        q: "¿Trabajáis por proyecto o mensualmente?",
-        a: "Las dos opciones. Algunos clientes empiezan con un proyecto y otros pasan a una colaboración continua.",
-      },
-    ],
-    ctaLabel: "¿Listo para crecer?",
-    ctaTitle: "Vamos a identificar tu siguiente palanca de crecimiento.",
+    pricingNote: "De uiteindelijke scope hangt af van het project.",
+    ctaEyebrow: "Contact",
+    ctaTitle: "Klaar om je website of systemen te verbeteren?",
     ctaText:
-      "Ya sea que quieras mejores leads, mejor hiring o sistemas más inteligentes, el objetivo es el mismo: construir algo que funcione y escale.",
-    ctaPrimary: "Contactar",
-    ctaSecondary: "Ver servicios",
-    ctaFoot: "Enfoque claro. Ejecución rápida. Posicionamiento premium.",
-    footerTitle: "Travon Group",
-    footerText:
-      "Recruitment, performance marketing y automatización para empresas que quieren crecer con estructura.",
-    footerNav: "Navegación",
-    footerContact: "Contacto",
-    footerRights: "© 2026 Travon Group. All rights reserved.",
-    mobileMenu: "Menú",
+      "Of je nu een betere website wilt, minder handmatig werk of een sterkere digitale basis, Travon helpt dit om te zetten in een duidelijke volgende stap.",
+    ctaPrimary: "Mail Travon Group",
+    ctaSecondary: "Bel Travon Group",
+    footerText: "Travon bouwt websites, systemen en digitale structuur voor moderne bedrijven.",
+    footerLinks: { services: "Diensten", process: "Proces", pricing: "Prijzen", contact: "Contact" },
   },
-} satisfies Record<Lang, any>;
+};
 
-const languageOptions: { value: Lang; label: string }[] = [
-  { value: "en", label: "EN" },
-  { value: "nl", label: "NL" },
-  { value: "es", label: "ES" },
+const serviceIcons = [
+  <Settings2 className="h-5 w-5" key="s" />,
+  <Workflow className="h-5 w-5" key="w" />,
+  <BarChart3 className="h-5 w-5" key="b" />,
 ];
 
-export default function HomePage() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [lang, setLang] = useState<Lang>("en");
+function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
+  return (
+    <div className="max-w-3xl">
+      <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[#1F8A70]">{eyebrow}</div>
+      <h2 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-[#0F1720] md:text-5xl">{title}</h2>
+      <p className="mt-4 max-w-2xl text-lg leading-8 text-[#5B6773]">{text}</p>
+    </div>
+  );
+}
+
+function TravonLogo({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0F1720] shadow-sm">
+        <div className="absolute right-2 top-2 h-4 w-4 rounded-full bg-[#1F8A70]/20" />
+        <div className="absolute left-2 bottom-2 h-4 w-4 rounded-full bg-[#2CD4A7]/10" />
+        <div className="absolute top-[11px] h-2.5 w-6 rounded-full bg-[#F6F8F5]" />
+        <div className="absolute top-[16px] h-6 w-2.5 rounded-full bg-[#F6F8F5]" />
+        <div className="absolute right-[9px] top-[18px] h-2.5 w-5 rotate-45 rounded-full bg-[#2CD4A7]" />
+        <div className="absolute bottom-[9px] left-[10px] h-2.5 w-5 rounded-full bg-[#1F8A70]" />
+      </div>
+      {!compact ? (
+        <div>
+          <div className="text-lg font-semibold tracking-[-0.03em] text-[#0F1720]">Travon Group</div>
+          <div className="text-xs text-[#6B7280]">Websites, automation & digital systems</div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export default function Page() {
+  const [lang, setLang] = useState<"en" | "nl">("en");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const t = content[lang];
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const t = useMemo(() => content[lang], [lang]);
-
   const navItems = [
     { href: "#services", label: t.nav.services },
-    { href: "#results", label: t.nav.results },
+    { href: "#problems", label: t.nav.problems },
     { href: "#process", label: t.nav.process },
-    { href: "#about", label: t.nav.about },
-    { href: "#faq", label: t.nav.faq },
+    { href: "#pricing", label: t.nav.pricing },
+    { href: "#contact", label: t.nav.contact },
   ];
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-white text-neutral-900">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <motion.div
-          animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute left-1/2 top-[-160px] h-[560px] w-[980px] -translate-x-1/2 rounded-full bg-neutral-100 blur-3xl"
-        />
-        <motion.div
-          animate={{ x: [0, -24, 0], y: [0, 20, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute right-[-120px] top-[320px] h-[340px] w-[340px] rounded-full bg-stone-100 blur-3xl"
-        />
-        <motion.div
-          animate={{ x: [0, 20, 0], y: [0, -16, 0] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute left-[-120px] top-[980px] h-[320px] w-[320px] rounded-full bg-neutral-100 blur-3xl"
-        />
-      </div>
+    <main className="relative min-h-screen overflow-hidden bg-[#F6F8F5] text-[#0F1720]">
+      <BackgroundDecor />
 
-      <header className="sticky top-0 z-50 px-4 pt-4">
-        <motion.div
-          animate={{
-            width: scrolled ? "min(1120px, calc(100% - 16px))" : "100%",
-          }}
-          transition={{ duration: 0.25 }}
-          className={`mx-auto max-w-7xl rounded-2xl border ${
+      <div className="relative z-30 mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+        <motion.header
+          initial={false}
+          animate={{ y: 0 }}
+          className={`sticky top-4 rounded-[24px] border transition-all duration-300 ${
             scrolled
-              ? "border-black/10 bg-white/85 shadow-lg backdrop-blur-xl"
-              : "border-transparent bg-white/70 backdrop-blur-md"
+              ? "border-[#DDE7E0] bg-white/90 shadow-[0_10px_40px_rgba(15,23,32,0.08)] backdrop-blur-xl"
+              : "border-[#DDE7E0]/70 bg-white/70 backdrop-blur-lg"
           }`}
         >
-          <div className="flex h-16 items-center justify-between px-4 sm:h-20 sm:px-6 lg:px-8">
-            <Link href="/" className="text-lg font-semibold tracking-tight text-neutral-950 sm:text-xl">
-              {t.brand}
-            </Link>
+          <div className="flex items-center justify-between px-5 py-4 lg:px-6">
+            <a href="#top" className="shrink-0">
+              <TravonLogo />
+            </a>
 
-            <nav className="hidden items-center gap-8 md:flex">
+            <nav className="hidden items-center gap-8 lg:flex">
               {navItems.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="text-sm text-neutral-600 transition hover:text-neutral-950"
-                >
+                <a key={item.href} href={item.href} className="text-sm font-medium text-[#55616D] transition hover:text-[#1F8A70]">
                   {item.label}
                 </a>
               ))}
             </nav>
 
-            <div className="hidden items-center gap-3 md:flex">
-              <div className="inline-flex rounded-full border border-neutral-200 bg-white p-1 shadow-sm">
-                {languageOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => setLang(option.value)}
-                    className={`rounded-full px-3 py-2 text-sm transition ${
-                      lang === option.value
-                        ? "bg-neutral-950 text-white"
-                        : "text-neutral-700 hover:bg-neutral-100"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+            <div className="hidden items-center gap-3 lg:flex">
+              <div className="inline-flex rounded-xl border border-[#DDE7E0] bg-[#FBFCFB] p-1">
+                <button
+                  onClick={() => setLang("en")}
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${lang === "en" ? "bg-[#1F8A70] text-white shadow-sm" : "text-[#55616D]"}`}
+                >
+                  EN
+                </button>
+                <button
+                  onClick={() => setLang("nl")}
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${lang === "nl" ? "bg-[#1F8A70] text-white shadow-sm" : "text-[#55616D]"}`}
+                >
+                  NL
+                </button>
               </div>
-
               <a
                 href="#contact"
-                className="inline-flex items-center justify-center rounded-full bg-neutral-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800"
+                className="inline-flex items-center justify-center rounded-xl bg-[#0F1720] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#18212d]"
               >
-                {t.topCta}
+                {t.nav.book}
               </a>
             </div>
 
             <button
-              onClick={() => setMobileOpen((v) => !v)}
-              className="inline-flex items-center justify-center rounded-full border border-neutral-200 bg-white p-2.5 text-neutral-900 md:hidden"
-              aria-label={t.mobileMenu}
+              onClick={() => setMenuOpen((v) => !v)}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#DDE7E0] bg-white text-[#0F1720] lg:hidden"
+              aria-label="Open menu"
             >
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
 
           <AnimatePresence>
-            {mobileOpen && (
+            {menuOpen ? (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden border-t border-black/5 md:hidden"
+                className="overflow-hidden border-t border-[#E8EEEA] lg:hidden"
               >
-                <div className="space-y-2 px-4 py-4">
+                <div className="space-y-2 px-5 py-4">
                   {navItems.map((item) => (
                     <a
                       key={item.href}
                       href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="block rounded-xl px-3 py-3 text-sm text-neutral-700 transition hover:bg-neutral-50 hover:text-neutral-950"
+                      onClick={() => setMenuOpen(false)}
+                      className="block rounded-xl px-3 py-3 text-sm font-medium text-[#55616D] transition hover:bg-[#F4F7F5] hover:text-[#1F8A70]"
                     >
                       {item.label}
                     </a>
                   ))}
-
-                  <div className="rounded-2xl border border-neutral-200 p-3">
-                    <div className="mb-3 flex items-center gap-2 text-sm text-neutral-600">
-                      <Globe className="h-4 w-4" />
-                      {t.langLabel}
-                    </div>
-                    <div className="flex gap-2">
-                      {languageOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => setLang(option.value)}
-                          className={`flex-1 rounded-xl px-3 py-2 text-sm transition ${
-                            lang === option.value
-                              ? "bg-neutral-950 text-white"
-                              : "bg-neutral-100 text-neutral-700"
-                          }`}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
+                  <div className="flex items-center gap-2 pt-2">
+                    <button
+                      onClick={() => setLang("en")}
+                      className={`rounded-lg px-3 py-2 text-sm font-medium ${lang === "en" ? "bg-[#1F8A70] text-white" : "border border-[#DDE7E0] bg-white text-[#55616D]"}`}
+                    >
+                      EN
+                    </button>
+                    <button
+                      onClick={() => setLang("nl")}
+                      className={`rounded-lg px-3 py-2 text-sm font-medium ${lang === "nl" ? "bg-[#1F8A70] text-white" : "border border-[#DDE7E0] bg-white text-[#55616D]"}`}
+                    >
+                      NL
+                    </button>
                   </div>
-
-                  <a
-                    href="#contact"
-                    onClick={() => setMobileOpen(false)}
-                    className="block rounded-xl bg-neutral-950 px-3 py-3 text-center text-sm font-medium text-white"
-                  >
-                    {t.topCta}
-                  </a>
                 </div>
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
-        </motion.div>
-      </header>
+        </motion.header>
+      </div>
 
-      <section className="relative">
-        <div className="mx-auto grid max-w-7xl gap-16 px-6 py-16 sm:py-24 lg:grid-cols-2 lg:px-8 lg:py-28">
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.6 }}
-            className="flex flex-col justify-center"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-              className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-neutral-200 bg-white/90 px-4 py-2 text-sm text-neutral-700 shadow-sm"
-            >
+      <section id="top" className="relative z-10 mx-auto max-w-7xl px-6 pb-28 pt-14 md:px-10 lg:px-12 lg:pt-20">
+        <div className="grid items-center gap-14 lg:grid-cols-[1.08fr_0.92fr]">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#D7E8DF] bg-[#EAF4EF] px-4 py-2 text-sm font-medium text-[#1F8A70]">
               <Sparkles className="h-4 w-4" />
               {t.heroBadge}
-            </motion.div>
+            </div>
 
-            <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-tight text-neutral-950 sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.04em] text-[#0F1720] md:text-6xl lg:text-7xl">
               {t.heroTitle}
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-600">
-              {t.heroText}
-            </p>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-[#5B6773] md:text-xl">{t.heroText}</p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <motion.a
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
+              <a
                 href="#contact"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-neutral-950 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-neutral-800"
+                className="group inline-flex items-center justify-center rounded-xl bg-[#1F8A70] px-6 py-4 text-base font-medium text-white shadow-[0_10px_30px_rgba(31,138,112,0.18)] transition hover:-translate-y-0.5 hover:bg-[#1b785f]"
               >
-                {t.heroPrimary}
-                <ArrowRight className="h-4 w-4" />
-              </motion.a>
-
-              <motion.a
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
+                {t.primaryCta}
+                <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+              </a>
+              <a
                 href="#services"
-                className="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-6 py-3.5 text-sm font-medium text-neutral-900 transition hover:border-neutral-400 hover:bg-neutral-50"
+                className="inline-flex items-center justify-center rounded-xl border border-[#DDE7E0] bg-white px-6 py-4 text-base font-medium text-[#0F1720] transition hover:border-[#1F8A70]/30 hover:text-[#1F8A70]"
               >
-                {t.heroSecondary}
-              </motion.a>
+                {t.secondaryCta}
+              </a>
             </div>
 
-            <div className="mt-12 grid max-w-xl grid-cols-3 gap-4">
-              {t.heroStats.map((item: { value: string; label: string }, index: number) => (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + index * 0.08, duration: 0.45 }}
-                  whileHover={{ y: -4 }}
-                  className="rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm"
-                >
-                  <p className="text-2xl font-semibold tracking-tight">{item.value}</p>
-                  <p className="mt-1 text-sm text-neutral-600">{item.label}</p>
-                </motion.div>
+            <div className="mt-6 text-sm text-[#6B7280]">{t.trustLine}</div>
+
+            <div className="mt-12 grid gap-4 sm:grid-cols-3">
+              {[
+                [lang === "en" ? "Cleaner" : "Duidelijker", lang === "en" ? "website structure and message" : "website-structuur en boodschap"],
+                [lang === "en" ? "Faster" : "Sneller", lang === "en" ? "daily workflows with less manual work" : "dagelijkse workflows met minder handmatig werk"],
+                [lang === "en" ? "Stronger" : "Sterker", lang === "en" ? "digital systems for long-term growth" : "digitale systemen voor groei op lange termijn"],
+              ].map(([value, label]) => (
+                <div key={label} className="rounded-2xl border border-[#DDE7E0] bg-white p-5 shadow-[0_8px_24px_rgba(15,23,32,0.04)]">
+                  <div className="text-2xl font-semibold tracking-[-0.02em] text-[#1F8A70]">{value}</div>
+                  <div className="mt-2 text-sm leading-6 text-[#6B7280]">{label}</div>
+                </div>
               ))}
             </div>
           </motion.div>
 
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="relative flex items-center"
-          >
-            <div className="relative w-full">
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -left-3 top-10 hidden rounded-3xl border border-neutral-200 bg-white p-4 shadow-xl lg:block"
-              >
-                <p className="text-sm text-neutral-500">Campaign Status</p>
-                <p className="mt-2 text-lg font-semibold text-neutral-950">Live & Optimizing</p>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-2 bottom-10 hidden rounded-3xl border border-neutral-200 bg-white p-4 shadow-xl lg:block"
-              >
-                <p className="text-sm text-neutral-500">System Quality</p>
-                <p className="mt-2 text-lg font-semibold text-neutral-950">Improving</p>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ y: -4 }}
-                className="rounded-[2rem] border border-neutral-200 bg-white/90 p-4 shadow-[0_30px_80px_rgba(0,0,0,0.08)] backdrop-blur sm:p-5"
-              >
-                <div className="rounded-[1.5rem] border border-neutral-200 bg-gradient-to-b from-white to-neutral-50 p-5 sm:p-6">
-                  <div className="flex items-center justify-between border-b border-neutral-200 pb-5">
-                    <div>
-                      <p className="text-sm text-neutral-500">{t.dashboardTitle}</p>
-                      <h3 className="mt-1 text-xl font-semibold tracking-tight text-neutral-950">
-                        {t.dashboardSub}
-                      </h3>
-                    </div>
-                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                      Live
-                    </span>
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }} className="relative">
+            <div className="absolute -inset-6 rounded-[2rem] bg-[#1F8A70]/8 blur-2xl" />
+            <div className="relative overflow-hidden rounded-[28px] border border-[#DDE7E0] bg-white p-7 shadow-[0_20px_60px_rgba(15,23,32,0.08)] md:p-8">
+              <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-[40px] bg-[#EEF4F0]" />
+              <div className="relative flex items-start justify-between gap-4">
+                <div>
+                  <div className="text-sm font-medium text-[#6B7280]">{t.frameworkTitle}</div>
+                  <div className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-[#0F1720]">
+                    {lang === "en" ? "Simple, clean, and built to improve" : "Simpel, strak en gebouwd om te verbeteren"}
                   </div>
+                </div>
+                <div className="rounded-2xl border border-[#D7E8DF] bg-[#EAF4EF] p-3 text-[#1F8A70]">
+                  <Globe className="h-5 w-5" />
+                </div>
+              </div>
 
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                    {t.dashboardCards.map((card: any, i: number) => (
-                      <motion.div
-                        key={card.title}
-                        whileHover={{ y: -3 }}
-                        className="rounded-3xl border border-neutral-200 bg-white p-5"
-                      >
-                        <p className="text-sm text-neutral-500">{card.title}</p>
-                        <p className="mt-2 text-3xl font-semibold tracking-tight text-neutral-950">
-                          {card.value}
-                        </p>
-                        <div className="mt-4 h-2 rounded-full bg-neutral-100">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: i === 0 ? "66%" : "75%" }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.9, delay: 0.2 + i * 0.1 }}
-                            className="h-2 rounded-full bg-neutral-900"
-                          />
-                        </div>
-                        <p className="mt-4 text-sm leading-6 text-neutral-600">{card.text}</p>
-                      </motion.div>
-                    ))}
-
-                    <div className="rounded-3xl border border-neutral-200 bg-white p-5 sm:col-span-2">
-                      <p className="text-sm text-neutral-500">{t.dashboardWhyTitle}</p>
-                      <p className="mt-3 leading-7 text-neutral-700">{t.dashboardWhyText}</p>
+              <div className="mt-8 space-y-4">
+                {t.frameworkItems.map((item) => (
+                  <div key={item} className="group rounded-2xl border border-[#E5ECE7] bg-[#FBFCFB] p-4 transition hover:border-[#CFE3D8] hover:shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="mt-0.5 h-5 w-5 text-[#1F8A70]" />
+                      <div className="text-sm font-medium leading-6 text-[#20303D]">{item}</div>
                     </div>
                   </div>
+                ))}
+              </div>
 
-                  <div className="mt-6 grid grid-cols-3 gap-3">
-                    {["Ads", "Funnels", "Automation"].map((item, index) => (
-                      <motion.div
-                        key={item}
-                        initial={{ opacity: 0, y: 12 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.06 }}
-                        className="rounded-2xl border border-neutral-200 bg-white p-4 text-center text-sm text-neutral-700"
-                      >
-                        {item}
-                      </motion.div>
-                    ))}
+              <div className="mt-8 grid grid-cols-3 gap-3">
+                {[
+                  { icon: <Workflow className="h-4 w-4" />, label: lang === "en" ? "Systems" : "Systemen" },
+                  { icon: <Truck className="h-4 w-4" />, label: lang === "en" ? "Growth" : "Groei" },
+                  { icon: <Globe className="h-4 w-4" />, label: lang === "en" ? "Digital" : "Digitaal" },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-2xl border border-[#E5ECE7] bg-[#FBFCFB] px-3 py-3 text-sm font-medium text-[#55616D]">
+                    <div className="mb-2 text-[#1F8A70]">{item.icon}</div>
+                    {item.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="relative z-10 border-y border-[#E2EAE4] bg-white/80 backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-6 py-6 md:px-10 lg:px-12">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[#6B7280]">{t.sectorsEyebrow}</div>
+            <div className="grid grid-cols-2 gap-4 text-sm font-medium text-[#55616D] sm:grid-cols-3 md:flex md:flex-wrap md:gap-8">
+              {t.sectors.map((sector) => (
+                <div key={sector} className="tracking-[0.08em]">{sector}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="problems" className="relative z-10 bg-[#EEF4F0]">
+        <div className="mx-auto max-w-7xl px-6 py-28 md:px-10 lg:px-12">
+          <SectionTitle eyebrow={t.problemsEyebrow} title={t.problemsTitle} text={t.problemsText} />
+          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {t.problems.map((problem, index) => (
+              <motion.div
+                key={problem}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.45, delay: index * 0.06 }}
+                className="rounded-[24px] border border-[#D7E8DF] bg-white p-6 shadow-[0_8px_24px_rgba(15,23,32,0.04)]"
+              >
+                <div className="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#EAF4EF] text-sm font-semibold text-[#1F8A70]">
+                  0{index + 1}
+                </div>
+                <div className="text-base font-medium leading-7 text-[#20303D]">{problem}</div>
+              </motion.div>
+            ))}
+          </div>
+          <div className="mt-8 text-base font-medium text-[#365264]">{t.problemsEnd}</div>
+        </div>
+      </section>
+
+      <section id="services" className="relative z-10 mx-auto max-w-7xl px-6 py-28 md:px-10 lg:px-12">
+        <SectionTitle eyebrow={t.servicesEyebrow} title={t.servicesTitle} text={t.servicesText} />
+        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          {t.serviceCards.map((service, index) => (
+            <motion.div
+              key={service.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.45, delay: index * 0.08 }}
+              className="group rounded-[28px] border border-[#DDE7E0] bg-white p-7 shadow-[0_12px_30px_rgba(15,23,32,0.04)] transition hover:-translate-y-1 hover:border-[#CFE3D8] hover:shadow-[0_20px_40px_rgba(15,23,32,0.06)]"
+            >
+              <div className="mb-5 inline-flex rounded-2xl border border-[#D7E8DF] bg-[#EAF4EF] p-3 text-[#1F8A70] transition group-hover:scale-105">
+                {serviceIcons[index]}
+              </div>
+              <h3 className="text-2xl font-semibold tracking-[-0.02em] text-[#0F1720]">{service.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-[#5B6773]">{service.text}</p>
+              <div className="mt-6 space-y-2">
+                {service.bullets.map((bullet) => (
+                  <div key={bullet} className="flex items-center gap-2 text-sm text-[#55616D]">
+                    <div className="h-1.5 w-1.5 rounded-full bg-[#1F8A70]" />
+                    {bullet}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-7 inline-flex items-center text-sm font-medium text-[#1F8A70]">
+                {lang === "en" ? "Learn more" : "Lees meer"}
+                <ChevronRight className="ml-1 h-4 w-4" />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      <section id="why" className="relative z-10 bg-[#FBFCFB]">
+        <div className="mx-auto max-w-7xl px-6 py-28 md:px-10 lg:px-12">
+          <SectionTitle eyebrow={t.whyEyebrow} title={t.whyTitle} text={t.whyText} />
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            {t.reasons.map((reason, index) => (
+              <motion.div
+                key={reason.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+                className="rounded-[28px] border border-[#DDE7E0] bg-white p-7 shadow-[0_10px_24px_rgba(15,23,32,0.04)]"
+              >
+                <h3 className="text-2xl font-semibold tracking-[-0.02em] text-[#0F1720]">{reason.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-[#5B6773]">{reason.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="process" className="relative z-10 mx-auto max-w-7xl px-6 py-28 md:px-10 lg:px-12">
+        <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <SectionTitle eyebrow={t.processEyebrow} title={t.processTitle} text={t.processText} />
+          <div className="grid gap-4">
+            {t.process.map((step, index) => (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+                className="rounded-[24px] border border-[#DDE7E0] bg-white p-5 shadow-[0_8px_20px_rgba(15,23,32,0.04)]"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#EAF4EF] text-sm font-semibold text-[#1F8A70]">
+                    0{index + 1}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold tracking-[-0.02em] text-[#0F1720]">{step.title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[#5B6773]">{step.text}</p>
                   </div>
                 </div>
               </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        variants={fadeUp}
-        viewport={viewport}
-        className="border-y border-neutral-200 bg-neutral-50/80"
-      >
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 py-8 text-sm text-neutral-600 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
-          {t.trust.map((item: string, idx: number) => {
-            const icons = [Layers3, ChartNoAxesCombined, Workflow, Sparkles];
-            const Icon = icons[idx];
-            return (
-              <motion.div
-                key={item}
-                whileHover={{ x: 4 }}
-                className="flex items-center gap-3"
-              >
-                <Icon className="h-4 w-4 text-neutral-900" />
-                {item}
-              </motion.div>
-            );
-          })}
-        </div>
-      </motion.section>
-
-      <section id="services" className="py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            variants={fadeUp}
-            viewport={viewport}
-            className="max-w-2xl"
-          >
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
-              {t.servicesLabel}
-            </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-950">
-              {t.servicesTitle}
-            </h2>
-            <p className="mt-4 text-lg leading-8 text-neutral-600">{t.servicesText}</p>
-          </motion.div>
-
-          <div className="mt-14 grid gap-6 lg:grid-cols-3">
-            {t.services.map((service: any, index: number) => {
-              const Icon = service.icon;
-              return (
-                <motion.div
-                  key={service.title}
-                  initial="hidden"
-                  whileInView="visible"
-                  variants={fadeUp}
-                  viewport={viewport}
-                  transition={{ duration: 0.45, delay: index * 0.08 }}
-                  whileHover={{ y: -6 }}
-                  className="group rounded-[1.75rem] border border-neutral-200 bg-white p-8 shadow-sm transition duration-300 hover:shadow-xl"
-                >
-                  <div className="inline-flex rounded-2xl border border-neutral-200 bg-neutral-50 p-3 transition group-hover:bg-neutral-950">
-                    <Icon className="h-5 w-5 text-neutral-950 transition group-hover:text-white" />
-                  </div>
-
-                  <h3 className="mt-6 text-2xl font-semibold tracking-tight text-neutral-950">
-                    {service.title}
-                  </h3>
-
-                  <p className="mt-4 leading-7 text-neutral-600">{service.description}</p>
-
-                  <ul className="mt-6 space-y-3">
-                    {service.points.map((point: string) => (
-                      <li key={point} className="flex items-center gap-3 text-sm text-neutral-700">
-                        <CircleCheck className="h-4 w-4 text-neutral-900" />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-neutral-950">
-                    {t.servicesMore}
-                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                  </div>
-                </motion.div>
-              );
-            })}
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="results" className="bg-neutral-50 py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            variants={fadeUp}
-            viewport={viewport}
-            className="max-w-2xl"
-          >
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
-              {t.resultsLabel}
-            </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-950">
-              {t.resultsTitle}
-            </h2>
-            <p className="mt-4 text-lg leading-8 text-neutral-600">{t.resultsText}</p>
-          </motion.div>
-
-          <div className="mt-14 grid gap-6 lg:grid-cols-3">
-            {t.results.map((item: any, index: number) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={item.title}
-                  initial="hidden"
-                  whileInView="visible"
-                  variants={fadeUp}
-                  viewport={viewport}
-                  transition={{ duration: 0.45, delay: index * 0.08 }}
-                  whileHover={{ y: -5 }}
-                  className="rounded-[1.75rem] border border-neutral-200 bg-white p-8 shadow-sm"
-                >
-                  <div className="inline-flex rounded-2xl bg-neutral-950 p-3">
-                    <Icon className="h-5 w-5 text-white" />
-                  </div>
-                  <h3 className="mt-6 text-2xl font-semibold tracking-tight text-neutral-950">
-                    {item.title}
-                  </h3>
-                  <p className="mt-4 leading-7 text-neutral-600">{item.text}</p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section id="process" className="bg-neutral-950 py-24 text-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            variants={fadeUp}
-            viewport={viewport}
-            className="max-w-2xl"
-          >
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-white/60">
-              {t.processLabel}
-            </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight">{t.processTitle}</h2>
-            <p className="mt-4 text-lg leading-8 text-white/70">{t.processText}</p>
-          </motion.div>
-
-          <div className="mt-14 grid gap-6 lg:grid-cols-3">
-            {t.process.map((item: any, index: number) => (
+      <section className="relative z-10 bg-[#EEF4F0]">
+        <div className="mx-auto max-w-7xl px-6 py-28 md:px-10 lg:px-12">
+          <SectionTitle eyebrow={t.examplesEyebrow} title={t.examplesTitle} text={t.examplesText} />
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            {t.examples.map((item, index) => (
               <motion.div
-                key={item.step}
-                initial="hidden"
-                whileInView="visible"
-                variants={fadeUp}
-                viewport={viewport}
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.45, delay: index * 0.08 }}
-                whileHover={{ y: -4 }}
-                className="rounded-[1.75rem] border border-white/10 bg-white/5 p-8"
+                className="rounded-[28px] border border-[#D7E8DF] bg-white p-7 shadow-[0_10px_24px_rgba(15,23,32,0.04)]"
               >
-                <p className="text-sm font-medium text-white/50">{item.step}</p>
-                <h3 className="mt-4 text-2xl font-semibold">{item.title}</h3>
-                <p className="mt-4 leading-7 text-white/70">{item.description}</p>
+                <div className="text-sm font-semibold text-[#1F8A70]">{item.number}</div>
+                <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-[#0F1720]">{item.title}</h3>
+                <p className="mt-4 text-sm leading-7 text-[#5B6773]">{item.text}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="about" className="py-24">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-2 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            variants={fadeUp}
-            viewport={viewport}
-          >
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
-              {t.aboutLabel}
-            </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-950">
-              {t.aboutTitle}
-            </h2>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-600">{t.aboutText}</p>
-          </motion.div>
-
-          <div className="grid gap-4">
-            {t.reasons.map((reason: any, index: number) => {
-              const Icon = reason.icon;
-              return (
-                <motion.div
-                  key={reason.title}
-                  initial="hidden"
-                  whileInView="visible"
-                  variants={fadeUp}
-                  viewport={viewport}
-                  transition={{ duration: 0.45, delay: index * 0.08 }}
-                  whileHover={{ x: 4 }}
-                  className="rounded-3xl border border-neutral-200 bg-neutral-50 p-6"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="rounded-2xl bg-neutral-950 p-3">
-                      <Icon className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-neutral-950">{reason.title}</h3>
-                      <p className="mt-2 leading-7 text-neutral-700">{reason.text}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section id="faq" className="border-t border-neutral-200 py-24">
-        <div className="mx-auto max-w-4xl px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            variants={fadeUp}
-            viewport={viewport}
-            className="max-w-2xl"
-          >
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
-              {t.faqLabel}
-            </p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-950">
-              {t.faqTitle}
-            </h2>
-          </motion.div>
-
-          <div className="mt-12 space-y-4">
-            {t.faqs.map((faq: any, index: number) => (
-              <motion.details
-                key={faq.q}
-                initial="hidden"
-                whileInView="visible"
-                variants={fadeUp}
-                viewport={viewport}
-                transition={{ duration: 0.45, delay: index * 0.05 }}
-                className="group rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm"
+      <section id="pricing" className="relative z-10 bg-[#FBFCFB]">
+        <div className="mx-auto max-w-7xl px-6 py-28 md:px-10 lg:px-12">
+          <SectionTitle eyebrow={t.pricingEyebrow} title={t.pricingTitle} text={t.pricingText} />
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            {t.pricingCards.map((item, index) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+                className={`rounded-[28px] border p-7 shadow-[0_12px_30px_rgba(15,23,32,0.04)] ${index === 1 ? "border-[#CFE3D8] bg-[linear-gradient(180deg,#FFFFFF_0%,#F1F7F3_100%)]" : "border-[#DDE7E0] bg-white"}`}
               >
-                <summary className="cursor-pointer list-none text-lg font-medium text-neutral-950">
-                  <div className="flex items-center justify-between gap-4">
-                    <span>{faq.q}</span>
-                    <ChevronDown className="h-5 w-5 text-neutral-400 transition group-open:rotate-180" />
-                  </div>
-                </summary>
-                <p className="pt-4 leading-7 text-neutral-600">{faq.a}</p>
-              </motion.details>
+                <h3 className="text-2xl font-semibold tracking-[-0.02em] text-[#0F1720]">{item.title}</h3>
+                <div className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-[#1F8A70]">{item.price}</div>
+                <p className="mt-3 text-sm leading-7 text-[#5B6773]">{item.text}</p>
+                <div className="mt-7 text-sm font-medium text-[#6B7280]">{t.pricingNote}</div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="contact" className="pb-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            variants={fadeUp}
-            viewport={viewport}
-            whileHover={{ y: -3 }}
-            className="relative overflow-hidden rounded-[2rem] border border-neutral-800 bg-neutral-950 px-8 py-14 text-white sm:px-12"
-          >
-            <motion.div
-              animate={{ x: [0, 20, 0], y: [0, -10, 0] }}
-              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.12),transparent_30%)]"
-            />
-
-            <div className="max-w-3xl">
-              <p className="text-sm font-medium uppercase tracking-[0.2em] text-white/60">
-                {t.ctaLabel}
-              </p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-tight">{t.ctaTitle}</h2>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-white/70">{t.ctaText}</p>
-
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-                <motion.a
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  href="mailto:info@travongroup.com"
-                  className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3.5 text-sm font-medium text-neutral-950 transition hover:bg-neutral-100"
-                >
-                  {t.ctaPrimary}
-                </motion.a>
-                <motion.a
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  href="#services"
-                  className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-white/10"
-                >
-                  {t.ctaSecondary}
-                </motion.a>
-              </div>
-
-              <p className="mt-5 text-sm text-white/50">{t.ctaFoot}</p>
+      <section className="relative z-10 mx-auto max-w-7xl px-6 py-10 md:px-10 lg:px-12">
+        <div className="rounded-[28px] border border-[#DDE7E0] bg-white p-7 shadow-[0_14px_34px_rgba(15,23,32,0.05)] md:flex md:items-center md:justify-between">
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[#1F8A70]">{lang === "en" ? "Next step" : "Volgende stap"}</div>
+            <div className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[#0F1720] md:text-3xl">
+              {lang === "en" ? "Want to see what Travon could improve first?" : "Wil je zien wat Travon als eerste kan verbeteren?"}
             </div>
-          </motion.div>
+          </div>
+          <a href="#contact" className="mt-5 inline-flex items-center justify-center rounded-xl bg-[#1F8A70] px-6 py-4 text-base font-medium text-white transition hover:bg-[#1b785f] md:mt-0">
+            {t.primaryCta}
+          </a>
         </div>
       </section>
 
-      <footer className="border-t border-neutral-200 bg-neutral-50">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-3 lg:px-8">
-          <div>
-            <h3 className="text-lg font-semibold text-neutral-950">{t.footerTitle}</h3>
-            <p className="mt-4 max-w-sm leading-7 text-neutral-600">{t.footerText}</p>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-neutral-500">
-              {t.footerNav}
-            </h4>
-            <div className="mt-4 flex flex-col gap-3 text-neutral-700">
-              <a href="#services" className="transition hover:text-neutral-950">
-                {t.nav.services}
-              </a>
-              <a href="#results" className="transition hover:text-neutral-950">
-                {t.nav.results}
-              </a>
-              <a href="#process" className="transition hover:text-neutral-950">
-                {t.nav.process}
-              </a>
-              <a href="#about" className="transition hover:text-neutral-950">
-                {t.nav.about}
-              </a>
+      <section id="contact" className="relative z-10 mx-auto max-w-7xl px-6 py-28 md:px-10 lg:px-12">
+        <div className="overflow-hidden rounded-[32px] border border-[#DDE7E0] bg-[#0F1720] p-8 text-white shadow-[0_25px_70px_rgba(15,23,32,0.18)] md:p-12">
+          <div className="absolute hidden h-72 w-72 rounded-full bg-[#1F8A70]/20 blur-3xl md:block" />
+          <div className="relative grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+            <div>
+              <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[#9CE8D6]">{t.ctaEyebrow}</div>
+              <h2 className="mt-4 max-w-3xl text-3xl font-semibold tracking-[-0.03em] md:text-5xl">{t.ctaTitle}</h2>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-white/72">{t.ctaText}</p>
             </div>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-neutral-500">
-              {t.footerContact}
-            </h4>
-            <div className="mt-4 flex flex-col gap-3 text-neutral-700">
-              <a href="mailto:info@travongroup.com" className="transition hover:text-neutral-950">
-                info@travongroup.com
-              </a>
-              <a href="#contact" className="transition hover:text-neutral-950">
-                {t.topCta}
-              </a>
+            <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
+              <div className="space-y-4">
+                <a href="mailto:info@travongroup.com" className="inline-flex w-full items-center justify-center rounded-xl bg-[#1F8A70] px-6 py-4 text-base font-medium text-white transition hover:bg-[#1b785f]">
+                  {t.ctaPrimary}
+                </a>
+                <a href="tel:+310636490512" className="inline-flex w-full items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 py-4 text-base font-medium text-white transition hover:bg-white/10">
+                  {t.ctaSecondary}
+                </a>
+              </div>
+              <div className="mt-7 space-y-4 text-sm text-white/75">
+                <div className="flex items-center gap-3">
+                  <MapPin className="h-4 w-4 text-[#2CD4A7]" />
+                  Rotterdam, Netherlands
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="h-4 w-4 text-[#2CD4A7]" />
+                  info@travongroup.com
+                </div>
+                <div className="flex items-center gap-3">
+                  <Phone className="h-4 w-4 text-[#2CD4A7]" />
+                  +31 06 3649 0512
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <div className="border-t border-neutral-200">
-          <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-6 text-sm text-neutral-500 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-            <p>{t.footerRights}</p>
-            <div className="inline-flex rounded-full border border-neutral-200 bg-white p-1">
-              {languageOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => setLang(option.value)}
-                  className={`rounded-full px-3 py-1.5 transition ${
-                    lang === option.value
-                      ? "bg-neutral-950 text-white"
-                      : "text-neutral-700 hover:bg-neutral-100"
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
+      <footer className="relative z-10 border-t border-[#E2EAE4] bg-white/80">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:grid-cols-[1.2fr_0.8fr_0.8fr] md:px-10 lg:px-12">
+          <div>
+            <TravonLogo compact />
+            <p className="mt-4 max-w-md text-sm leading-7 text-[#6B7280]">{t.footerText}</p>
+          </div>
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.14em] text-[#1F8A70]">Menu</div>
+            <div className="mt-4 space-y-3 text-sm text-[#55616D]">
+              <a href="#services" className="block transition hover:text-[#1F8A70]">{t.footerLinks.services}</a>
+              <a href="#process" className="block transition hover:text-[#1F8A70]">{t.footerLinks.process}</a>
+              <a href="#pricing" className="block transition hover:text-[#1F8A70]">{t.footerLinks.pricing}</a>
+              <a href="#contact" className="block transition hover:text-[#1F8A70]">{t.footerLinks.contact}</a>
+            </div>
+          </div>
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.14em] text-[#1F8A70]">Contact</div>
+            <div className="mt-4 space-y-3 text-sm text-[#55616D]">
+              <div>info@travongroup.com</div>
+              <div>+31 06 3649 0512</div>
+              <div>Rotterdam, Netherlands</div>
             </div>
           </div>
         </div>
+        <div className="border-t border-[#E8EEEA] px-6 py-5 text-center text-sm text-[#8A94A0]">© 2026 Travon Group. All rights reserved.</div>
       </footer>
     </main>
+  );
+}
+
+function BackgroundDecor() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,32,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,32,0.03)_1px,transparent_1px)] bg-[size:48px_48px] opacity-35" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(31,138,112,0.08),transparent_22%),radial-gradient(circle_at_82%_18%,rgba(44,212,167,0.08),transparent_24%),radial-gradient(circle_at_50%_0%,rgba(31,138,112,0.06),transparent_35%)]" />
+      <motion.div
+        className="absolute left-[-6rem] top-[-5rem] h-72 w-72 rounded-full bg-[#1F8A70]/8 blur-3xl"
+        animate={{ x: [0, 28, -10, 0], y: [0, 20, 40, 0] }}
+        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute right-[-8rem] top-[8rem] h-80 w-80 rounded-full bg-[#2CD4A7]/8 blur-3xl"
+        animate={{ x: [0, -30, 10, 0], y: [0, 40, -20, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute bottom-[-6rem] left-[25%] h-72 w-72 rounded-full bg-[#1F8A70]/6 blur-3xl"
+        animate={{ x: [0, 36, -16, 0], y: [0, -18, 24, 0] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </div>
   );
 }
