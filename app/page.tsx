@@ -578,19 +578,25 @@ export default function Page() {
             </div>
 
             <div className="mt-12 grid gap-4 sm:grid-cols-3">
-              {t.heroStats.map(([value, label]: [string, string]) => (
-                <div
-                  key={label}
-                  className="rounded-2xl border border-[#DDE7E0] bg-white/95 p-5 shadow-[0_10px_28px_rgba(15,23,32,0.05)] backdrop-blur-sm"
-                >
-                  <div className="text-2xl font-semibold tracking-[-0.02em] text-[#17795E]">
-                    {value}
-                  </div>
-                  <div className="mt-2 text-sm leading-6 text-[#6B7280]">
-                    {label}
-                  </div>
-                </div>
-              ))}
+<div className="mt-12 grid gap-4 sm:grid-cols-3">
+  {t.heroStats.map((stat: string[]) => {
+    const [value, label] = stat;
+
+    return (
+      <div
+        key={label}
+        className="rounded-2xl border border-[#DDE7E0] bg-white/95 p-5 shadow-[0_10px_28px_rgba(15,23,32,0.05)] backdrop-blur-sm"
+      >
+        <div className="text-2xl font-semibold tracking-[-0.02em] text-[#17795E]">
+          {value}
+        </div>
+        <div className="mt-2 text-sm leading-6 text-[#6B7280]">
+          {label}
+        </div>
+      </div>
+    );
+  })}
+</div>
             </div>
           </motion.div>
 
